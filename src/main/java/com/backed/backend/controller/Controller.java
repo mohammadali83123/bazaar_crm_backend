@@ -3,9 +3,10 @@ package com.backed.backend.controller;
 import com.backed.backend.dto.ConversationRequest;
 import com.backed.backend.dto.MessageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import static java.sql.DriverManager.println;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
@@ -14,13 +15,13 @@ public class Controller {
 
 
     @PostMapping("conversation")
-    public ResponseEntity<ConversationRequest> botAndCustomerConversation(@RequestBody ConversationRequest conversationRequest) {
+    public ResponseEntity<ConversationRequest> storeBotAndCustomerConversation(@RequestBody ConversationRequest conversationRequest) {
         System.out.println("Received conversation request: " + conversationRequest);
         return ResponseEntity.ok(conversationRequest);
     }
 
     @PostMapping("message")
-    public ResponseEntity<MessageRequest> message(@RequestBody MessageRequest messageRequest){
+    public ResponseEntity<MessageRequest> checkAndListMessage(@RequestBody MessageRequest messageRequest){
         System.out.println("Received message request: " + messageRequest);
         return ResponseEntity.status(200).build();
     }

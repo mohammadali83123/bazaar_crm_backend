@@ -15,6 +15,7 @@ public class Customer {
     private String customerId;
     private String customerName;
     private String channelId;
+    private String phoneNumber;
 
     @CreatedDate
     private LocalDateTime createdAt;
