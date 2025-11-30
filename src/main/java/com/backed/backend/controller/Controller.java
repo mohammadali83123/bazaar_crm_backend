@@ -21,13 +21,11 @@ public class Controller {
 
     @PostMapping("conversation")
     public ResponseEntity<ConversationRequest> storeBotAndCustomerConversation(@RequestBody ConversationRequest conversationRequest) {
-        System.out.println("Received conversation request: " + conversationRequest);
         return ResponseEntity.status(service.storeBotAndCustomerConversation(conversationRequest)).build();
     }
 
     @PostMapping("message")
     public ResponseEntity<MessageRequest> checkAndListMessage(@RequestBody MessageRequest messageRequest){
-        System.out.println("Received message request: " + messageRequest);
         return ResponseEntity.status(200).build();
     }
 
