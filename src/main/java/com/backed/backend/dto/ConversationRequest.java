@@ -10,4 +10,6 @@ public class ConversationRequest {
     private String channelId;
     private List<Map<String, Object>> conversation;
     private String customerId;
+    private String customerName;
+    private String customerPhoneNumber;
 }
