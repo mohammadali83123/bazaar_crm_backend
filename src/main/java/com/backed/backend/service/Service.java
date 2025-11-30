@@ -26,17 +26,17 @@ public class Service {
     private MessageRepository messageRepository;
 
     public int storeBotAndCustomerConversation(ConversationRequest conversationRequest) {
-        try{
-             storeCustomer(conversationRequest.getCustomerId(),
+        try {
+            storeCustomer(conversationRequest.getCustomerId(),
                     conversationRequest.getCustomerName(),
                     conversationRequest.getChannelId(),
                     conversationRequest.getCustomerPhoneNumber());
 
-             extractConversation(conversationRequest.getConversation(), conversationRequest.getCustomerId());
+            extractConversation(conversationRequest.getConversation(), conversationRequest.getCustomerId());
 
 
-             return 200;
-        }catch (Exception e) {
+            return 200;
+        } catch (Exception e) {
             System.out.println("ERROR: " + e);
             return 500;
         }
@@ -46,21 +46,21 @@ public class Service {
 
     }
 
-    private void extractConversation(List<Map<String, Object>> conversation, String customerId){
+    private void extractConversation(List < Map < String, Object >> conversation, String customerId) {
         int size = conversation.size();
         String conversationId = conversation.get(0).get("conversationId").toString();
 
-        for(Map<String, Object> i : conversation){
+        for (Map < String, Object > i: conversation) {
             String storeContactType = new String();
-            Map<String, Object> sender = (Map<String, Object>) i.get("sender");
+            Map < String, Object > sender = (Map < String, Object > ) i.get("sender");
             String type = sender.get("type").toString();
-            if(type.equals("bot")){
+            if (type.equals("bot")) {
                 storeContactType = type;
-            }else{
+            } else {
                 storeContactType = "customer";
             }
-            Map<String, Object> body = (Map<String, Object>) i.get("body");
-            Map<String, Object> text = (Map<String, Object>) body.get("text");
+            Map < String, Object > body = (Map < String, Object > ) i.get("body");
+            Map < String, Object > text = (Map < String, Object > ) body.get("text");
             String conversationMessage = text.get("text").toString();
             String messageId = i.get("id").toString();
             LocalDateTime createdAt =
@@ -80,18 +80,19 @@ public class Service {
         }
     }
 
-    private int storeCustomer(String customerId, String customerName, String channelId, String customerPhoneNumber){
-       try{Customer customer = new Customer(
-       customerId,
-       customerName,
-       channelId,
-       customerPhoneNumber
-       );
+    private int storeCustomer(String customerId, String customerName, String channelId, String customerPhoneNumber) {
+        try {
+            Customer customer = new Customer(
+                    customerId,
+                    customerName,
+                    channelId,
+                    customerPhoneNumber
+            );
 
-       Customer savedCustomer = customerRepository.save(customer);
-       return 200;
-       }catch (Exception e){
-           return 500;
-       }
+            Customer savedCustomer = customerRepository.save(customer);
+            return 200;
+        } catch (Exception e) {
+            return 500;
+        }
     }
 }
