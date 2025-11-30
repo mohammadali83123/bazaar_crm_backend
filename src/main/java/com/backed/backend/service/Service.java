@@ -2,6 +2,7 @@ package com.backed.backend.service;
 
 import com.backed.backend.dto.ConversationRequest;
 import com.backed.backend.dto.MessageRequest;
+import com.backed.backend.entity.Conversation;
 import com.backed.backend.entity.Customer;
 import com.backed.backend.entity.Message;
 import com.backed.backend.repository.ConversationRepository;
@@ -27,13 +28,13 @@ public class Service {
 
     public int storeBotAndCustomerConversation(ConversationRequest conversationRequest) {
         try {
-            storeCustomer(conversationRequest.getCustomerId(),
-                    conversationRequest.getCustomerName(),
-                    conversationRequest.getChannelId(),
-                    conversationRequest.getCustomerPhoneNumber());
-
-            extractConversation(conversationRequest.getConversation(), conversationRequest.getCustomerId());
-
+            if(customerRepository.findByCustomerId(conversationRequest.getCustomerId()).isEmpty()){
+                storeCustomer(conversationRequest.getCustomerId(),
+                        conversationRequest.getCustomerName(),
+                        conversationRequest.getCustomerPhoneNumber());
+            }
+            extractAndStoreConversation(conversationRequest.getConversation(), conversationRequest.getCustomerId());
+            extractAndStoreConversationMessages(conversationRequest.getConversation());
 
             return 200;
         } catch (Exception e) {
@@ -46,13 +47,23 @@ public class Service {
 
     }
 
-    private void extractConversation(List < Map < String, Object >> conversation, String customerId) {
+    public void extractAndStoreConversation(List < Map < String, Object >> requestConversation, String customerId){
+        String conversationId = requestConversation.get(0).get("conversationId").toString();
+        Conversation conversation = new Conversation(
+                conversationId,
+                customerId
+        );
+
+        Conversation savedConversation = conversationRepository.save(conversation);
+    }
+
+    private void extractAndStoreConversationMessages(List < Map < String, Object >> conversation) {
         int size = conversation.size();
-        String conversationId = conversation.get(0).get("conversationId").toString();
 
         for (Map < String, Object > i: conversation) {
             String storeContactType = new String();
             Map < String, Object > sender = (Map < String, Object > ) i.get("sender");
+            String customerId = sender.get("id").toString();
             String type = sender.get("type").toString();
             if (type.equals("bot")) {
                 storeContactType = type;
@@ -70,7 +81,7 @@ public class Service {
                     );
             Message message = new Message(
                     messageId,
-                    conversationId,
+                    customerId,
                     storeContactType,
                     conversationMessage,
                     createdAt
@@ -80,12 +91,11 @@ public class Service {
         }
     }
 
-    private int storeCustomer(String customerId, String customerName, String channelId, String customerPhoneNumber) {
+    private int storeCustomer(String customerId, String customerName, String customerPhoneNumber) {
         try {
             Customer customer = new Customer(
                     customerId,
                     customerName,
-                    channelId,
                     customerPhoneNumber
             );
 

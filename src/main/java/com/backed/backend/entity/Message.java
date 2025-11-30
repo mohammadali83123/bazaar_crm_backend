@@ -9,14 +9,14 @@ import java.time.LocalDateTime;
 @Document(collection = "message")
 public class Message {
     private String messageId;
-    private String conversationId;
+    private String customerId;
     private String contactType;
     private String message;
     private LocalDateTime createdAt;
 
-    public Message (String messageId, String conversationId, String contactType, String message, LocalDateTime createdAt ){
+    public Message (String messageId, String customerId, String contactType, String message, LocalDateTime createdAt ){
         this.messageId = messageId;
-        this.conversationId = conversationId;
+        this.customerId = customerId;
         this.contactType = contactType;
         this.message = message;
         this.createdAt = createdAt;
