@@ -1,7 +1,6 @@
 package com.backed.backend.service;
 
 import com.backed.backend.dto.ConversationRequest;
-import com.backed.backend.dto.MessageRequest;
 import com.backed.backend.entity.Conversation;
 import com.backed.backend.entity.Customer;
 import com.backed.backend.entity.Message;
@@ -33,7 +32,7 @@ public class Service {
                         conversationRequest.getCustomerName(),
                         conversationRequest.getCustomerPhoneNumber());
             }
-            extractAndStoreConversation(conversationRequest.getConversation(), conversationRequest.getCustomerId());
+            extractAndStoreConversation(conversationRequest.getConversation(), conversationRequest.getCustomerId(), conversationRequest.getChannelId());
             extractAndStoreConversationMessages(conversationRequest.getConversation());
 
             return 200;
@@ -43,15 +42,12 @@ public class Service {
         }
     }
 
-    public void checkAndListMessage(MessageRequest messageRequest) {
-
-    }
-
-    public void extractAndStoreConversation(List < Map < String, Object >> requestConversation, String customerId){
+    public void extractAndStoreConversation(List < Map < String, Object >> requestConversation, String customerId, String channelId){
         String conversationId = requestConversation.get(0).get("conversationId").toString();
         Conversation conversation = new Conversation(
                 conversationId,
-                customerId
+                customerId,
+                channelId
         );
 
         Conversation savedConversation = conversationRepository.save(conversation);
