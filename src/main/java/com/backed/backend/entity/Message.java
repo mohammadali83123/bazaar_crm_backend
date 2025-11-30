@@ -13,14 +13,14 @@ public class Message {
     @Id
     @Field("_id")
     private String messageId;
-    private String customerId;
+    private String conversationId;
     private String contactType;
     private String message;
     private LocalDateTime createdAt;
 
-    public Message (String messageId, String customerId, String contactType, String message, LocalDateTime createdAt ){
+    public Message (String messageId, String conversationId, String contactType, String message, LocalDateTime createdAt ){
         this.messageId = messageId;
-        this.customerId = customerId;
+        this.conversationId = conversationId;
         this.contactType = contactType;
         this.message = message;
         this.createdAt = createdAt;

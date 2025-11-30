@@ -40,7 +40,6 @@ public class Service {
 
             return 200;
         } catch (Exception e) {
-            System.out.println("ERROR: " + e);
             return 500;
         }
     }
@@ -62,7 +61,7 @@ public class Service {
         for (Map < String, Object > i: conversation) {
             String storeContactType = new String();
             Map < String, Object > sender = (Map < String, Object > ) i.get("sender");
-            String customerId = sender.get("id").toString();
+            String conversationId = i.get("conversationId").toString();
             String type = sender.get("type").toString();
             if (type.equals("bot")) {
                 storeContactType = type;
@@ -80,7 +79,7 @@ public class Service {
                     );
             Message message = new Message(
                     messageId,
-                    customerId,
+                    conversationId,
                     storeContactType,
                     conversationMessage,
                     createdAt
@@ -109,12 +108,9 @@ public class Service {
         try {
             Conversation conversation = conversationRepository.findById(conversationId)
                     .orElseThrow(() -> new RuntimeException("Conversation Not Found"));
-            System.out.println("Before Conversation: " + conversation);
             conversation.setConversationStatus(ConversationStatus.CLOSED);
-            System.out.println("After Conversation: " + conversation);
             conversationRepository.save(conversation);
         } catch (Exception e) {
-            System.out.println("ERROR: " + e);
             throw new RuntimeException("Internal Server Error");
         }
     }
@@ -128,11 +124,11 @@ public class Service {
             String customerId = contactInfo.get("id").toString();
             String channelId = messageRequest.getPayload().get("channelId").toString();
             Optional<Conversation> conversation = conversationRepository.findByCustomerIdAndConversationStatusAndChannelId(customerId, ConversationStatus.OPEN, channelId);
-            System.out.println("Conversation: " + conversation);
+
             if(!conversation.isPresent()){
                 throw new RuntimeException("Conversation Not Found");
             }
-
+            String conversationId = conversation.get().getConversationId();
             String messageId = messageRequest.getPayload().get("id").toString();
             String senderType = "customer";
             String messageText = text.get("text").toString();
@@ -141,12 +137,11 @@ public class Service {
                     ZoneId.of("Asia/Karachi")
             );
 
-            Message message = new Message(messageId, customerId, senderType, messageText, createdAt);
+            Message message = new Message(messageId,conversationId , senderType, messageText, createdAt);
             Message savedMessage = messageRepository.save(message);
 
 
         } catch (Exception e) {
-            System.out.println("ERROR: " + e);
             throw new RuntimeException("Internal Server Error");
         }
     }
