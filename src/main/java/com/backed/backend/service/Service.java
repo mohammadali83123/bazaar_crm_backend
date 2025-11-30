@@ -1,6 +1,7 @@
 package com.backed.backend.service;
 
 import com.backed.backend.dto.ConversationRequest;
+import com.backed.backend.dto.ListConversationsResponse;
 import com.backed.backend.dto.MessageRequest;
 import com.backed.backend.entity.Conversation;
 import com.backed.backend.entity.ConversationStatus;
@@ -9,6 +10,7 @@ import com.backed.backend.entity.Message;
 import com.backed.backend.repository.ConversationRepository;
 import com.backed.backend.repository.CustomerRepository;
 import com.backed.backend.repository.MessageRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Instant;
@@ -125,7 +127,7 @@ public class Service {
             String channelId = messageRequest.getPayload().get("channelId").toString();
             Optional<Conversation> conversation = conversationRepository.findByCustomerIdAndConversationStatusAndChannelId(customerId, ConversationStatus.OPEN, channelId);
 
-            if(!conversation.isPresent()){
+            if(conversation.isEmpty()){
                 throw new RuntimeException("Conversation Not Found");
             }
             String conversationId = conversation.get().getConversationId();
@@ -144,5 +146,78 @@ public class Service {
         } catch (Exception e) {
             throw new RuntimeException("Internal Server Error");
         }
+    }
+
+    public List<ListConversationsResponse> getConversations(){
+        List<Conversation> conversations = conversationRepository.findAllByConversationStatus(ConversationStatus.OPEN)
+                .orElseThrow(()-> new RuntimeException("No Open Conversation Found"));
+
+        Customer customer = customerRepository.findById(conversations.get(0).getCustomerId())
+                .orElseThrow(()-> new RuntimeException("Customer Not Found"));
+
+//        Approach 1
+//        List<ListConversationsResponse> listConversationsResponse = new ArrayList<>();
+//        for (Conversation conversation : conversations) {
+//            ListConversationsResponse response  = new ListConversationsResponse();
+//            response.setConversationId(conversation.getConversationId());
+//            response.setChannelPhoneNumber(conversation.getChannelPhoneNumber());
+//            response.setConversationStatus(conversation.getConversationStatus().toString());
+//            response.setCustomerName(customer.getCustomerName());
+//
+//            listConversationsResponse.add(response);
+//        }
+
+//        Approach 2
+//        List<ListConversationsResponse> listConversationsResponse = new ArrayList<>();
+//        for(int i = 0; i<conversations.size();i++){
+//           Conversation conversation = conversations.get(i);
+//           ListConversationsResponse response = new ListConversationsResponse();
+//           response.setConversationId(conversation.getConversationId());
+//           response.setChannelPhoneNumber(conversation.getChannelPhoneNumber());
+//           response.setConversationStatus(conversation.getConversationStatus().toString());
+//           response.setCustomerName(customer.getCustomerName());
+//
+//           listConversationsResponse.add(response);
+//
+//        }
+
+//        Approach 3 using java stream
+//        List<ListConversationsResponse> listConversationsResponse =
+//                conversations.stream()
+//                        .map(conversation -> {
+//                            ListConversationsResponse response = new ListConversationsResponse();
+//                            response.setConversationId(conversation.getConversationId());
+//                            response.setChannelPhoneNumber(conversation.getChannelPhoneNumber());
+//                            response.setConversationStatus(conversation.getConversationStatus());
+//                            response.setCustomerName(customer.getCustomerName());
+//                            return response;
+//                        })
+//                        .toList(); // or .collect(Collectors.toList()) for Java < 16
+
+
+//        Approach 4 for using builder, annotate @Builder on ListConversationsResponse class
+//        List<ListConversationsResponse> listConversationsResponse = conversations.stream()
+//                .map(conversation -> ListConversationsResponse.builder()
+//                        .conversationId(conversation.getConversationId())
+//                        .channelPhoneNumber(conversation.getChannelPhoneNumber())
+//                        .conversationStatus(conversation.getConversationStatus().toString())
+//                        .customerName(customer.getCustomerName())
+//                        .build())
+//                .collect(Collectors.toList());
+
+//        Approach 5 by creating parametarized constructor in ListConversationsResponse class and then using java stream to call the constructor and passing conversation iterator
+
+//        Approach 6 by creating Mapper Class and then using java stream and passing conversation iterator (just like approach 5)
+
+//        Aproach 7 using ModelMapper by import its dependency in pom.xml
+        ModelMapper modelMapper = new ModelMapper();
+        List<ListConversationsResponse> list = conversations.stream()
+                .map(c -> {
+                    ListConversationsResponse dto = modelMapper.map(c, ListConversationsResponse.class);
+                    dto.setCustomerName(customer.getCustomerName());
+                    return dto;
+                }).toList();
+
+        return list;
     }
 }

@@ -1,11 +1,14 @@
 package com.backed.backend.controller;
 
 import com.backed.backend.dto.ConversationRequest;
+import com.backed.backend.dto.ListConversationsResponse;
 import com.backed.backend.dto.MessageRequest;
 import com.backed.backend.service.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -16,12 +19,12 @@ public class Controller {
     private Service service;
 
 
-    @PostMapping("conversation")
+    @PostMapping("store/conversation")
     public ResponseEntity<ConversationRequest> storeBotAndCustomerConversation(@RequestBody ConversationRequest conversationRequest) {
         return ResponseEntity.status(service.storeBotAndCustomerConversation(conversationRequest)).build();
     }
 
-    @PostMapping("message")
+    @PostMapping("store/message")
     public ResponseEntity<MessageRequest> checkAndStoreMessage(@RequestBody MessageRequest messageRequest){
         service.checkAndStoreMessage(messageRequest);
         return ResponseEntity.status(200).build();
@@ -33,6 +36,11 @@ public class Controller {
         return ResponseEntity
                 .status(200)
                 .body("Conversation closed");
+    }
+
+    @GetMapping("conversations/view")
+    public ResponseEntity<List<ListConversationsResponse>> getConversations(){
+        return ResponseEntity.ok(service.getConversations());
     }
 
 }
