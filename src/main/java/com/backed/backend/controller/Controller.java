@@ -5,10 +5,7 @@ import com.backed.backend.dto.MessageRequest;
 import com.backed.backend.service.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -27,6 +24,14 @@ public class Controller {
     @PostMapping("message")
     public ResponseEntity<MessageRequest> checkAndListMessage(@RequestBody MessageRequest messageRequest){
         return ResponseEntity.status(200).build();
+    }
+
+    @PutMapping("/conversation/{conversationId}/view/close")
+    public ResponseEntity<String> closeConversation(@PathVariable String conversationId){
+        service.closeConversation(conversationId);
+        return ResponseEntity
+                .status(200)
+                .body("Conversation closed");
     }
 
 }

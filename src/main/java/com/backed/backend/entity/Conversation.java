@@ -1,5 +1,6 @@
 package com.backed.backend.entity;
 
+import jakarta.persistence.Id;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -9,10 +10,11 @@ import java.time.LocalDateTime;
 @Data
 @Document(collection = "conversation")
 public class Conversation {
-    String conversationId;
-    String customerId;
-    String channelId;
-    String channelPhoneNumber;
+    @Id
+    private String conversationId;
+    private String customerId;
+    private String channelId;
+    private String channelPhoneNumber;
     ConversationStatus conversationStatus;
 
     @CreatedDate

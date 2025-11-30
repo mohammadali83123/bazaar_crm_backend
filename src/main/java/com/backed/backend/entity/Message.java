@@ -1,5 +1,6 @@
 package com.backed.backend.entity;
 
+import jakarta.persistence.Id;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @Document(collection = "message")
 public class Message {
+    @Id
     private String messageId;
     private String customerId;
     private String contactType;

@@ -2,6 +2,7 @@ package com.backed.backend.service;
 
 import com.backed.backend.dto.ConversationRequest;
 import com.backed.backend.entity.Conversation;
+import com.backed.backend.entity.ConversationStatus;
 import com.backed.backend.entity.Customer;
 import com.backed.backend.entity.Message;
 import com.backed.backend.repository.ConversationRepository;
@@ -99,6 +100,17 @@ public class Service {
             return 200;
         } catch (Exception e) {
             return 500;
+        }
+    }
+
+    public void closeConversation(String conversationId){
+        try {
+            Conversation conversation = conversationRepository.findByConversationId(conversationId)
+                    .orElseThrow(() -> new RuntimeException("Conversation Not Found"));
+            conversation.setConversationStatus(ConversationStatus.CLOSED);
+            conversationRepository.save(conversation);
+        } catch (Exception e) {
+            throw new RuntimeException("Internal Server Error");
         }
     }
 }
