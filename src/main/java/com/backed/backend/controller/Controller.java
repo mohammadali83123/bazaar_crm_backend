@@ -22,11 +22,12 @@ public class Controller {
     }
 
     @PostMapping("message")
-    public ResponseEntity<MessageRequest> checkAndListMessage(@RequestBody MessageRequest messageRequest){
+    public ResponseEntity<MessageRequest> checkAndStoreMessage(@RequestBody MessageRequest messageRequest){
+        service.checkAndStoreMessage(messageRequest);
         return ResponseEntity.status(200).build();
     }
 
-    @PutMapping("/conversation/{conversationId}/view/close")
+    @PutMapping("conversation/{conversationId}/view/close")
     public ResponseEntity<String> closeConversation(@PathVariable String conversationId){
         service.closeConversation(conversationId);
         return ResponseEntity

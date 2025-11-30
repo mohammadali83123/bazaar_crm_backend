@@ -1,6 +1,7 @@
 package com.backed.backend.service;
 
 import com.backed.backend.dto.ConversationRequest;
+import com.backed.backend.dto.MessageRequest;
 import com.backed.backend.entity.Conversation;
 import com.backed.backend.entity.ConversationStatus;
 import com.backed.backend.entity.Customer;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @org.springframework.stereotype.Service
 public class Service {
@@ -111,6 +113,38 @@ public class Service {
             conversation.setConversationStatus(ConversationStatus.CLOSED);
             System.out.println("After Conversation: " + conversation);
             conversationRepository.save(conversation);
+        } catch (Exception e) {
+            System.out.println("ERROR: " + e);
+            throw new RuntimeException("Internal Server Error");
+        }
+    }
+
+    public void checkAndStoreMessage(MessageRequest messageRequest){
+        try {
+            Map<String,Object> sender = (Map<String,Object>) messageRequest.getPayload().get("sender");
+            Map<String,Object> contactInfo = (Map<String,Object>) sender.get("contact");
+            Map<String, Object> body = (Map<String, Object>) messageRequest.getPayload().get("body");
+            Map<String, Object> text = (Map<String, Object>) body.get("text");
+            String customerId = contactInfo.get("id").toString();
+            String channelId = messageRequest.getPayload().get("channelId").toString();
+            Optional<Conversation> conversation = conversationRepository.findByCustomerIdAndConversationStatusAndChannelId(customerId, ConversationStatus.OPEN, channelId);
+            System.out.println("Conversation: " + conversation);
+            if(!conversation.isPresent()){
+                throw new RuntimeException("Conversation Not Found");
+            }
+
+            String messageId = messageRequest.getPayload().get("id").toString();
+            String senderType = "customer";
+            String messageText = text.get("text").toString();
+            LocalDateTime createdAt = LocalDateTime.ofInstant(
+                    Instant.parse(messageRequest.getPayload().get("createdAt").toString()),
+                    ZoneId.of("Asia/Karachi")
+            );
+
+            Message message = new Message(messageId, customerId, senderType, messageText, createdAt);
+            Message savedMessage = messageRepository.save(message);
+
+
         } catch (Exception e) {
             System.out.println("ERROR: " + e);
             throw new RuntimeException("Internal Server Error");
