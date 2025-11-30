@@ -1,9 +1,10 @@
 package com.backed.backend.entity;
 
-import jakarta.persistence.Id;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Document(collection = "customer")
 public class Customer {
     @Id
+    @Field("_id")
     private String customerId;
     private String customerName;
     private String customerPhoneNumber;
@@ -24,10 +26,6 @@ public class Customer {
         this.customerId = customerId;
         this.customerName = customerName;
         this.customerPhoneNumber = customerPhoneNumber;
-//        this.channelId = channelId;
-//        if (this.channelId.equals("94c43479-3338-4ff6-883a-46ff0fd9edc7")){
-//            this.channelPhoneNumber = "+923000724227";
-//        }
         this.createdAt = LocalDateTime.now();
     }
 }

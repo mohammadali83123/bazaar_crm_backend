@@ -28,7 +28,7 @@ public class Service {
 
     public int storeBotAndCustomerConversation(ConversationRequest conversationRequest) {
         try {
-            if(customerRepository.findByCustomerId(conversationRequest.getCustomerId()).isEmpty()){
+            if(customerRepository.findById(conversationRequest.getCustomerId()).isEmpty()){
                 storeCustomer(conversationRequest.getCustomerId(),
                         conversationRequest.getCustomerName(),
                         conversationRequest.getCustomerPhoneNumber());
@@ -105,11 +105,14 @@ public class Service {
 
     public void closeConversation(String conversationId){
         try {
-            Conversation conversation = conversationRepository.findByConversationId(conversationId)
+            Conversation conversation = conversationRepository.findById(conversationId)
                     .orElseThrow(() -> new RuntimeException("Conversation Not Found"));
+            System.out.println("Before Conversation: " + conversation);
             conversation.setConversationStatus(ConversationStatus.CLOSED);
+            System.out.println("After Conversation: " + conversation);
             conversationRepository.save(conversation);
         } catch (Exception e) {
+            System.out.println("ERROR: " + e);
             throw new RuntimeException("Internal Server Error");
         }
     }
