@@ -43,4 +43,9 @@ public class Controller {
         return ResponseEntity.ok(service.getConversations());
     }
 
+//    @GetMapping("conversation/{conversationId}/view")
+//    public ResponseEntity<List<ListMessagesResponse>> getConversationMessages(@PathVariable String conversationId){
+//        return ResponseEntity.ok(service.getMessages(conversationId));
+//    }
+
 }

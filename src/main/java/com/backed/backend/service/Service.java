@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @org.springframework.stereotype.Service
 public class Service {
@@ -125,12 +124,10 @@ public class Service {
             Map<String, Object> text = (Map<String, Object>) body.get("text");
             String customerId = contactInfo.get("id").toString();
             String channelId = messageRequest.getPayload().get("channelId").toString();
-            Optional<Conversation> conversation = conversationRepository.findByCustomerIdAndConversationStatusAndChannelId(customerId, ConversationStatus.OPEN, channelId);
+            Conversation conversation = conversationRepository.findByCustomerIdAndConversationStatusAndChannelId(customerId, ConversationStatus.OPEN, channelId)
+                    .orElseThrow(() -> new RuntimeException("Conversation Not Found"));
 
-            if(conversation.isEmpty()){
-                throw new RuntimeException("Conversation Not Found");
-            }
-            String conversationId = conversation.get().getConversationId();
+            String conversationId = conversation.getConversationId();
             String messageId = messageRequest.getPayload().get("id").toString();
             String senderType = "customer";
             String messageText = text.get("text").toString();
@@ -220,4 +217,11 @@ public class Service {
 
         return list;
     }
+
+//    public List<ListMessagesResponse> getMessages(String conversationId){
+//        Conversation conversation = conversationRepository.findById(conversationId)
+//                .orElseThrow(()-> new RuntimeException("Conversation Not Found"));
+//
+//        List<Message> messages = messageRepository.findAllByConversationId(conversationId);
+//    }
 }
