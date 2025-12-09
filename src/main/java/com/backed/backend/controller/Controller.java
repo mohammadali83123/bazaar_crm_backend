@@ -26,9 +26,8 @@ public class Controller {
     }
 
     @PostMapping("store/message")
-    public ResponseEntity<MessageRequest> checkAndStoreMessage(@RequestBody MessageRequest messageRequest){
-        service.checkAndStoreMessage(messageRequest);
-        return ResponseEntity.status(200).build();
+    public ResponseEntity<Integer> checkAndStoreMessage(@RequestBody MessageRequest messageRequest){
+        return ResponseEntity.ok(service.checkAndStoreMessage(messageRequest));
     }
 
     @PutMapping("conversation/{conversationId}/view/close")

@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @org.springframework.stereotype.Service
 public class Service {
@@ -117,7 +118,7 @@ public class Service {
         }
     }
 
-    public void checkAndStoreMessage(MessageRequest messageRequest){
+    public int checkAndStoreMessage(MessageRequest messageRequest){
         try {
             Map<String,Object> sender = (Map<String,Object>) messageRequest.getPayload().get("sender");
             Map<String,Object> contactInfo = (Map<String,Object>) sender.get("contact");
@@ -125,10 +126,12 @@ public class Service {
             Map<String, Object> text = (Map<String, Object>) body.get("text");
             String customerId = contactInfo.get("id").toString();
             String channelId = messageRequest.getPayload().get("channelId").toString();
-            Conversation conversation = conversationRepository.findByCustomerIdAndConversationStatusAndChannelId(customerId, ConversationStatus.OPEN, channelId)
-                    .orElseThrow(() -> new RuntimeException("Conversation Not Found"));
+            Optional<Conversation> conversation = conversationRepository.findByCustomerIdAndConversationStatusAndChannelId(customerId, ConversationStatus.OPEN, channelId);
+            if(conversation.isEmpty()){
+                return 200;
+            }
 
-            String conversationId = conversation.getConversationId();
+            String conversationId = conversation.get().getConversationId();
             String messageId = messageRequest.getPayload().get("id").toString();
             String senderType = "customer";
             String messageText = text.get("text").toString();
@@ -144,6 +147,7 @@ public class Service {
         } catch (Exception e) {
             throw new RuntimeException("Internal Server Error");
         }
+        return 200;
     }
 
     public List<ListConversationsResponse> getConversations(){
