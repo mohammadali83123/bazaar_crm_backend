@@ -2,6 +2,7 @@ package com.backed.backend.service;
 
 import com.backed.backend.dto.ConversationRequest;
 import com.backed.backend.dto.ListConversationsResponse;
+import com.backed.backend.dto.ListMessagesResponse;
 import com.backed.backend.dto.MessageRequest;
 import com.backed.backend.entity.Conversation;
 import com.backed.backend.entity.ConversationStatus;
@@ -218,10 +219,24 @@ public class Service {
         return list;
     }
 
-//    public List<ListMessagesResponse> getMessages(String conversationId){
-//        Conversation conversation = conversationRepository.findById(conversationId)
-//                .orElseThrow(()-> new RuntimeException("Conversation Not Found"));
-//
-//        List<Message> messages = messageRepository.findAllByConversationId(conversationId);
-//    }
+    public List<ListMessagesResponse> getMessages(String conversationId){
+        Conversation conversation = conversationRepository.findById(conversationId)
+                .orElseThrow(()-> new RuntimeException("Conversation Not Found"));
+        Customer customer = customerRepository.findById(conversation.getCustomerId())
+                .orElseThrow(()-> new RuntimeException("Customer Not Found"));
+        List<Message> messages = messageRepository.findAllByConversationId(conversationId);
+
+        List<ListMessagesResponse> list = messages.stream()
+                .map(m -> ListMessagesResponse.builder()
+                        .messageId(m.getMessageId())
+                        .contactType(m.getContactType())
+                        .messageText(m.getMessage())
+                        .createdAt(m.getCreatedAt())
+                        .customerPhoneNumber(customer.getCustomerPhoneNumber())
+                        .conversationStatus(conversation.getConversationStatus().toString())
+                        .build())
+                .toList();
+
+        return list;
+    }
 }

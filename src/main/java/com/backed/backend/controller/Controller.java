@@ -2,6 +2,7 @@ package com.backed.backend.controller;
 
 import com.backed.backend.dto.ConversationRequest;
 import com.backed.backend.dto.ListConversationsResponse;
+import com.backed.backend.dto.ListMessagesResponse;
 import com.backed.backend.dto.MessageRequest;
 import com.backed.backend.service.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,9 +44,9 @@ public class Controller {
         return ResponseEntity.ok(service.getConversations());
     }
 
-//    @GetMapping("conversation/{conversationId}/view")
-//    public ResponseEntity<List<ListMessagesResponse>> getConversationMessages(@PathVariable String conversationId){
-//        return ResponseEntity.ok(service.getMessages(conversationId));
-//    }
+    @GetMapping("conversation/{conversationId}/view")
+    public ResponseEntity<List<ListMessagesResponse>> getConversationMessages(@PathVariable String conversationId){
+        return ResponseEntity.ok(service.getMessages(conversationId));
+    }
 
 }
