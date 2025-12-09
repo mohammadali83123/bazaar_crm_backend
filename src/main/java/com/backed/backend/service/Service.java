@@ -47,7 +47,7 @@ public class Service {
         }
     }
 
-    public void extractAndStoreConversation(List < Map < String, Object >> requestConversation, String customerId, String channelId){
+    private void extractAndStoreConversation(List < Map < String, Object >> requestConversation, String customerId, String channelId){
         String conversationId = requestConversation.get(0).get("conversationId").toString();
         Conversation conversation = new Conversation(
                 conversationId,
